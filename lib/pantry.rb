@@ -1,5 +1,3 @@
-require 'pry'
-
 class Pantry
   attr_reader :stock, :shopping_list, :cookbook
 
@@ -47,23 +45,19 @@ class Pantry
   end
 
   def what_can_i_make
-    viable_recipes = []
-    @cookbook.each do |recipe|
-      available_ingredients = find_available_ingredients(recipe)
-      if (available_ingredients & recipe.ingredients.keys) == recipe.ingredients.keys
-        viable_recipes << recipe.name
+    @cookbook.map do |recipe|
+      available = find_available_ingredients(recipe)
+      if (available & recipe.ingredients.keys) == recipe.ingredients.keys
+        recipe.name
       end
-    end
-    viable_recipes
+    end.compact
   end
 
   def find_available_ingredients(recipe)
-    available_ingredients = []
-    recipe.ingredients.each do |item, count|
+    recipe.ingredients.map do |item, count|
       next unless @stock.key?(item)
-      available_ingredients << item if @stock[item] >= count
+      item if @stock[item] >= count
     end
-    available_ingredients
   end
 
   def how_many_can_i_make
@@ -72,15 +66,16 @@ class Pantry
     end
     how_many = {}
     available_recipes.each do |recipe|
-      number = 0
-      recipe.ingredients.each do |ingredient, count|
-        if @stock[ingredient]/count > number
-          number = @stock[ingredient]/count
-        end
-        how_many[recipe.name] = number
-      end
+      how_many[recipe.name] = find_number(recipe)
     end
     how_many
   end
 
+  def find_number(recipe)
+    number = 0
+    recipe.ingredients.each do |ingredient, count|
+      number = @stock[ingredient] / count if @stock[ingredient] / count > number
+    end
+    number
+  end
 end

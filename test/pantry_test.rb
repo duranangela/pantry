@@ -2,7 +2,6 @@ require './lib/pantry'
 require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/recipe'
-require 'pry'
 
 class PantryTest < Minitest::Test
   def setup
