@@ -49,7 +49,15 @@ class Pantry
   def what_can_i_make
     viable_recipes = []
     @cookbook.each do |recipe|
-      
-
-
+      available_ingredients = []
+      recipe.ingredients.each do |item, count|
+        next unless @stock.key?(item)
+        available_ingredients << item if @stock[item] >= count
+      end
+      if (available_ingredients & recipe.ingredients.keys) == recipe.ingredients.keys
+        viable_recipes << recipe.name
+      end
+    end
+    viable_recipes
+  end
 end
