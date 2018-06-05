@@ -60,4 +60,22 @@ class Pantry
     end
     viable_recipes
   end
+
+  def how_many_can_i_make
+    available_recipes = @cookbook.find_all do |recipe|
+      recipe if what_can_i_make.include?(recipe.name)
+    end
+    how_many = {}
+    available_recipes.each do |recipe|
+      number = 0
+      recipe.ingredients.each do |ingredient, count|
+        if @stock[ingredient]/count > number
+          number = @stock[ingredient]/count
+        end
+        how_many[recipe.name] = number
+      end
+    end
+    how_many
+  end
+
 end
